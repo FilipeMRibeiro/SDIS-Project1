@@ -2,15 +2,19 @@ package protocols;
 
 import utilities.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Backup {
 
 	private static final int chunkSize = 64; //in kBytes
+	private static final int k = 1000; //if we wish to easily convert from kBytes to kiBytes
 	
 	public Backup(String fileName, String fileDirectory, int repliDegree) {
 		
@@ -31,7 +35,7 @@ public class Backup {
 			BufferedInputStream inputBuffer = new BufferedInputStream(fileInput);
 			
 			//Buffer to store the data for each chunk
-			byte[] fileDataBuffer = new byte[chunkSize * 1024]; //chunkSize is in kBytes, multiply by 1024 to convert to Bytes
+			byte[] fileDataBuffer = new byte[chunkSize * k];
 			
 			//Helper variable to check how many bytes we have read from the original file
 			int bytesRead = 0; 
@@ -42,8 +46,10 @@ public class Backup {
 			//Cycle that reads the bytes from the file and creates a new file with it
 			try { //Catches errors reading from original file or writing to new file
 				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 ) {
-					String newFilePath = FileNameUtilities.stripExtension(file.getName()) + fileNo++ + FileNameUtilities.getExtension(file.getName());
-					File newFile = new File(file.getParent(), newFilePath);
+					//String newFilePath = FileNameUtilities.stripExtension(file.getName()) + fileNo++ + FileNameUtilities.getExtension(file.getName());
+					String newFileName = generateFileIdentifier(file, fileNo++);
+					
+					File newFile = new File(file.getParent(), newFileName);
 					
 					//Opens filestream to output the copied data to a new file of size = chunkSize
 					FileOutputStream fileOutput = new FileOutputStream(newFile);
@@ -62,24 +68,30 @@ public class Backup {
 			
 	}
 	
-	private static String generateFileIdentifier(File file) {
+	private static String generateFileIdentifier(File file, int fileNo) {
 		
-		String fileIdentifier;
+		String fileIdentifier = file.getName(); //Just an initialization of the variable fileIdentifier
 		Path path = file.toPath();
 		
+		String lastModified = String.valueOf(file.lastModified());
+		String size = String.valueOf(file.getTotalSpace());
+		String fileName = file.getName();
+
+		fileIdentifier = fileName + "-" + size + "-" + lastModified + "-" + String.valueOf(fileNo);
+
 		try {
-			BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class, null);
-			String lastModified = attributes.lastModifiedTime().toString();
-			String created = attributes.creationTime().toString();
-			String fileName = file.getName();
-			
-			fileIdentifier = created + "-" + fileName + "-" + lastModified;
-			
-		} catch (IOException e) {
-			System.out.println("Error reading attributes from file " + file.getName());
+			MessageDigest digest;
+			digest = MessageDigest.getInstance("SHA-256");
+			byte[] encodedhash = digest.digest(fileIdentifier.getBytes(StandardCharsets.UTF_8));
+
+			fileIdentifier = FileNameUtilities.bytesToHex(encodedhash);
+
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
-		return "";
+		}	
+	
+		return fileIdentifier;
 	}
 	
 	public static void main(String[] args) {
