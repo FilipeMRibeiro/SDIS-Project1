@@ -65,7 +65,7 @@ public class Peer {
 				dir.mkdir();
 			}
 			
-			File file = new File(directory + filenumber + "_" + filename);
+			File file = new File(directory + filename);
 			FileOutputStream fileOutput = new FileOutputStream(file);
 			fileOutput.write(content.getBytes()); // bytesRead is used to make sure that all chunks only get relevant data. This avoids the last chunk having jitter at the end of it caused by data from the previous chunk	
 			fileOutput.close();

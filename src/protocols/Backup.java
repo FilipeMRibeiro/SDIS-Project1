@@ -67,7 +67,7 @@ public class Backup {
 					multicast_socket.send(packet);
 					
 					//Sends filename
-					packet = new DatagramPacket(fileName.getBytes(), fileName.getBytes().length, multicast_group, mcast_port);
+					packet = new DatagramPacket(newFileName.getBytes(), newFileName.getBytes().length, multicast_group, mcast_port);
 					multicast_socket.send(packet);
 					
 					//Sends file content
