@@ -2,6 +2,10 @@ package protocols;
 
 import utilities.*;
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +19,8 @@ public class Backup {
 
 	private static final int chunkSize = 64; //in kBytes
 	private static final int k = 1000; //if we wish to easily convert from kBytes to kiBytes
+	private static String mcast_addr = "225.0.0.0";
+	private static int mcast_port = 8000;
 	
 	public Backup(String fileName, String fileDirectory, int repliDegree) {
 		
@@ -24,9 +30,13 @@ public class Backup {
 	
 	//Helper Functions
 	
-	private static void splitFile(String fileDirectory, String fileName) {
+	private static void splitFile(String fileDirectory, String fileName) throws IOException {
 		
 		File file = new File(fileDirectory + fileName);
+		
+		InetAddress multicast_group = InetAddress.getByName(mcast_addr);
+		MulticastSocket multicast_socket = new MulticastSocket(mcast_port);
+		multicast_socket.joinGroup(multicast_group);
 
 		//Handles the "File not found" Exception
 		try {
@@ -41,15 +51,28 @@ public class Backup {
 			int bytesRead = 0; 
 			
 			//TODO Replace this with a new way to identify the files
-			int fileNo = 1;
+			int fileNo = 0;
 
 			//Cycle that reads the bytes from the file and creates a new file with it
 			try { //Catches errors reading from original file or writing to new file
 				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 ) {
 					//String newFilePath = FileNameUtilities.stripExtension(file.getName()) + fileNo++ + FileNameUtilities.getExtension(file.getName());
 					String newFileName = generateFileIdentifier(file, fileNo++);
+					String fileNumber = "" + fileNo;
 					
 					File newFile = new File(file.getParent(), newFileName);
+					
+					//Sends file no
+					DatagramPacket packet = new DatagramPacket(fileNumber.getBytes(), fileNumber.getBytes().length, multicast_group, mcast_port);
+					multicast_socket.send(packet);
+					
+					//Sends filename
+					packet = new DatagramPacket(fileName.getBytes(), fileName.getBytes().length, multicast_group, mcast_port);
+					multicast_socket.send(packet);
+					
+					//Sends file content
+					packet = new DatagramPacket(fileDataBuffer, fileDataBuffer.length, multicast_group, mcast_port);
+					multicast_socket.send(packet);
 					
 					//Opens filestream to output the copied data to a new file of size = chunkSize
 					FileOutputStream fileOutput = new FileOutputStream(newFile);
@@ -94,7 +117,8 @@ public class Backup {
 		return fileIdentifier;
 	}
 	
-	public static void main(String[] args) {
-		 splitFile("C:\\Users\\Grosso\\Desktop\\", "testfile.txt");
+	public static void main(String[] args) throws IOException {
+		 //splitFile("C:\\Users\\Grosso\\Desktop\\", "testfile.txt");
+		 splitFile("/home/filipe/Documents/", "testfile.txt");
 	}
 }
