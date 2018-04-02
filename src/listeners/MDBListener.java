@@ -20,14 +20,13 @@ public class MDBListener implements Runnable {
 				
 				String message = new String(received.getData(), Charset.forName("ISO_8859_1"));
 				
-				System.out.println("RECEIVED MESSAGE");
 				if(processMessage(message)); //Receives the confirmation that the chunk was stored
 				{
 					String chunkNo = headerParts[4];
 					String fileId = headerParts[3];
-					String senderId = headerParts[2];
 					
-					Peer.sendStoredMessage(senderId, fileId, chunkNo);
+					Peer.sendStoredMessage(fileId, chunkNo);
+					
 				}
 			} catch (IOException e) {
 				System.out.println("Data Backup Channel: " + "ERROR - " + e.getMessage());
@@ -42,7 +41,14 @@ public class MDBListener implements Runnable {
 	private static boolean processMessage(String message) {
 		
 		String header = message.split(StaticVariables.CRLF2)[0];
+		
+		String messageType = header.split(" ")[0];
+		String senderId = header.split(" ")[2];
+		if(!messageType.equals("PUTCHUNK") || senderId.equals(Peer.id))
+			return false;
+		
 		String body = message.split(StaticVariables.CRLF2)[1];
+
 
 		byte[] chunkData = body.getBytes(Charset.forName("ISO_8859_1")); //Solves some compatibility issues
 		
@@ -73,25 +79,6 @@ public class MDBListener implements Runnable {
 			return false;
 		}		
 		return true;
-	}
-	
-	
-	
-	public static void main(String[] args) throws IOException{
-		
-		File file = new File("C:" + File.separator + "Users" + File.separator + "Utilizador" + File.separator + "Desktop" + File.separator + "test.jpg");
-		FileInputStream fileInput = new FileInputStream(file);
-		
-		byte[] bytes = new byte[1000000];
-		
-		int readBytes = fileInput.read(bytes);
-		
-		
-		String message = "PUTCHUNK <Version> <SenderId> FileId2 2 <ReplicationDeg> " + StaticVariables.CRLF2 + new String(bytes, 0, readBytes, Charset.forName("ISO_8859_1"));
-		
-		
-		processMessage(message);
-		
 	}
 	
 	

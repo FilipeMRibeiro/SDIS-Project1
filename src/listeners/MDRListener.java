@@ -19,15 +19,12 @@ public class MDRListener implements Runnable {
 			DatagramPacket received = new DatagramPacket(buf, buf.length);
 			
 			try {
-				StaticVariables.mdbSocket.receive(received);
+				StaticVariables.mdrSocket.receive(received);
 				
 				String message = new String(received.getData(), Charset.forName("ISO_8859_1"));
 				
-				System.out.println("RECEIVED MESSAGE");
 				if(processMessage(message)); //Receives the confirmation that the chunk was restored
 				{
-					Peer.chunkNo = headerParts[4];
-					Peer.senderId = headerParts[2];
 				}
 				
 			} catch (IOException e) {
@@ -52,24 +49,6 @@ public class MDRListener implements Runnable {
 		String fileId = headerParts[3];
 		String chunkNo = headerParts[4];
 		
-		try {
-			String path = "Stored Chunks" + "//" + fileId + "//" +"Chunk" + chunkNo;
-			FileInputStream fileInput = new FileInputStream(path);
-			BufferedInputStream inputBuffer = new BufferedInputStream(fileInput);
-			byte[] fileDataBuffer = new byte[StaticVariables.chunkSize * StaticVariables.k];
-			int bytesRead = 0;
-			try {
-				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 ) {
-					
-				}	
-			} catch (IOException e) {
-				System.out.println("Error reading from file.");
-				e.printStackTrace();
-			}
-			
-		} catch (IOException e) {
-			return false;
-		}		
 			
 		return true;
 	}

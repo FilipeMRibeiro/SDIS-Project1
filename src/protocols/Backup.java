@@ -26,7 +26,7 @@ public class Backup {
 
 	private static String fileId;
 	private static boolean proceed;
-	private static int curReplicationDegree;
+	private static int curReplicationDegree = 0;
 	private static List<String> peersResponded = new ArrayList<String>();
 	private static String chunkNo;
 	
@@ -71,7 +71,7 @@ public class Backup {
 					
 					if(curReplicationDegree < replicationDegree) {
 						++attempt;
-						System.out.println("Replation degree achieved: " + curReplicationDegree);
+						System.out.println("Replication degree achieved: " + curReplicationDegree);
 						System.out.println("Tryng again, attempt number: " + attempt);
 
 					}
@@ -115,6 +115,7 @@ public class Backup {
 		if(!peersResponded.contains(peerId) && fileId.equals(Backup.fileId) && chunkNo.equals(Backup.chunkNo)) {
 			peersResponded.add(peerId);
 			++curReplicationDegree;
+			System.out.println("RECEIVED CHUNK STORED CONFIRMATION. Current rep: " + curReplicationDegree);
 		}
 		
 	}
