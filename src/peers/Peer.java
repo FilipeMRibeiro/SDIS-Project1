@@ -8,6 +8,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import protocols.Backup;
+
 
 public class Peer {
 	
@@ -20,6 +22,7 @@ public class Peer {
 	private static String service_address = "127.0.0.1";
 	
 	private static int initiator;
+	private static Backup backup;
 	
 	public static void main(String[] args) throws IOException {
 		if (args.length != 4) {
@@ -39,7 +42,8 @@ public class Peer {
 		multicast_socket.joinGroup(multicast_address);
 		
 		if(initiator == 1) {
-			String request = "DELETE <Version> " + id + " test <ChunkNo>";
+			String message = "hello";
+			String request = "PUTCHUNK <Version> " + id + " test <ChunkNo> <ReplicationDeg> " + message;
 			DatagramPacket request_packet = new DatagramPacket(request.getBytes(), request.getBytes().length, multicast_address, mcast_port);
 			multicast_socket.send(request_packet);
 		}
