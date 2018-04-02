@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
+import interfaces.ClientInterface;
 import protocols.Backup;
 
 
@@ -17,22 +18,19 @@ public class Peer {
 	private static String directory; //directory for this peer's files
 	private static int space; //amount of space available to this peer
 	
-	private static String mcast_addr;
+	private static String mcast_addr = "225.0.0";
 	private static int mcast_port = 8000;
-	private static String service_address = "127.0.0.1";
 	
 	private static int initiator;
-	private static Backup backup;
 	
 	public static void main(String[] args) throws IOException {
-		if (args.length != 4) {
-			System.out.println("Usage: Peer <id> <space> <mcast_addr> <mcast_port>");
+		if (args.length != 3) {
+			System.out.println("Usage: Peer <id> <space> <initiator>");
 			return;
 		}
 		id = Integer.parseInt(args[0]);
 		space = Integer.parseInt(args[1]);
-		mcast_addr = args[2];
-		initiator = Integer.parseInt(args[3]);
+		initiator = Integer.parseInt(args[2]);
 		directory = "/home/filipe/Downloads/peer" + id + "/";
 		
 		
@@ -42,6 +40,8 @@ public class Peer {
 		multicast_socket.joinGroup(multicast_address);
 		
 		if(initiator == 1) {
+			ClientInterface cli = new ClientInterface();
+			cli.mainMenu();
 			String message = "hello";
 			String request = "PUTCHUNK <Version> " + id + " test <ChunkNo> <ReplicationDeg> " + message;
 			DatagramPacket request_packet = new DatagramPacket(request.getBytes(), request.getBytes().length, multicast_address, mcast_port);

@@ -7,7 +7,11 @@ import java.util.Scanner;
 
 public class ClientInterface {
 
-	public static void main(String[] args) throws IOException {
+	public ClientInterface() throws IOException {
+		
+	}
+	
+	public void mainMenu() {
 		System.out.println("--CLIENT INTERFACE--");
 		System.out.println("1. Backup Files");
 		System.out.println("2. Restore Files");
@@ -27,7 +31,7 @@ public class ClientInterface {
 		}
 	}
 	
-	private static void deleteMenu() {
+	public void deleteMenu() {
 		boolean done = false;
 		while(!done) {
 			System.out.println();
@@ -51,7 +55,7 @@ public class ClientInterface {
 		}
 	}
 
-	private static void restoreMenu() {
+	public void restoreMenu() {
 		boolean done = false;
 		while(!done) {
 			System.out.println();
@@ -75,16 +79,17 @@ public class ClientInterface {
 		}
 	}
 
-	public static void backupMenu() {
+	public void backupMenu() {
 		boolean done = false;
-		while(!done) {
+		boolean exit = false;
+		while(!done && !exit) {
 			System.out.println();
 			System.out.println("Path to file? (input 'exit' to exit)");
 			Scanner in = new Scanner(System.in);
 			String path = in.nextLine();
 			
 			if(path.compareTo("exit") == 0) {
-				done = true;
+				exit = true;
 			}
 			else {
 				File dir = new File(String.valueOf(path));
@@ -97,15 +102,17 @@ public class ClientInterface {
 			}
 		}
 		done = false;
-		while(!done) {
+		while(!done && !exit) {
 			System.out.println();
 			System.out.println("Replication degree? (input 0 to exit)");
 			Scanner in = new Scanner(System.in);
 			int rep_degree = in.nextInt();
 			
-			if(rep_degree > 0 && rep_degree < 10) {
+			if(rep_degree == 0) {
+				exit = true;
+			}
+			else if(rep_degree > 0 && rep_degree < 10) {
 				//começaProtocoloBackup(); - alterar o nome - não sei como começar o protocolo
-
 				done = true;
 			}
 			else {
