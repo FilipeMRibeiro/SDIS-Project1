@@ -15,6 +15,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileOwnerAttributeView;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import controllers.PeerController;
 import listeners.StaticVariables;
@@ -22,12 +24,16 @@ import peers.Peer;
 
 public class Backup {
 
-	static String fileId;
+	private static String fileId;
+	private static boolean proceed;
+	private static int curReplicationDegree;
+	private static List<String> peersResponded = new ArrayList<String>();
+	private static String chunkNo;
+	
 	
 	private static void backupFile(String fileDirectory, String fileName, int replicationDegree) throws IOException {
 		
 		File file = new File(fileDirectory + "\\" + fileName);
-		
 		fileId = generateFileIdentifier(file);
 
 		//Handles the "File not found" Exception
@@ -46,14 +52,40 @@ public class Backup {
 			int chunkNo = 1;
 			//Cycle that reads the bytes from the file and creates a new file with it
 			try { //Catches errors reading from original file or writing to new file
-				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 ) {
+				
+				int attempt = 1; //For timeout purposes
+				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 && attempt <= 5) {
 					
+					sendMessage(fileDataBuffer, bytesRead, chunkNo, replicationDegree);
 					
-					sendMessage(fileDataBuffer, bytesRead, chunkNo++, replicationDegree);
+					proceed = false;
+					Backup.chunkNo = Integer.toString(chunkNo);
+		
+					//waits for responses for 1 second
+					long startTime = System.currentTimeMillis();
+					while(!proceed) {
+					long curTime = System.currentTimeMillis();
+					if(curTime - startTime >= 1000)
+						proceed = true;
+					}
 					
-					//WAITS FOR RESPONSE
-					
+					if(curReplicationDegree < replicationDegree) {
+						++attempt;
+						System.out.println("Replation degree achieved: " + curReplicationDegree);
+						System.out.println("Tryng again, attempt number: " + attempt);
+
+					}
+					else {
+						attempt = 1; //Resets attempt
+						++chunkNo; //Advances chunk
+						curReplicationDegree = 0; 
+						peersResponded.clear();
+					}
 				}
+				if(attempt >= 5)
+					System.out.println("Backup timed out after 5 attempts");
+				
+				
 			} catch (IOException e) {
 				System.out.println("Error reading from file " + fileName + " in directory: " + fileDirectory);
 				e.printStackTrace();
@@ -78,10 +110,14 @@ public class Backup {
 		StaticVariables.mdbSocket.send(messagePacket);
 	}
 	
-	
-	
-	
-	
+	public static void receivedResponse(String peerId, String fileId, String chunkNo) {
+		
+		if(!peersResponded.contains(peerId) && fileId.equals(Backup.fileId) && chunkNo.equals(Backup.chunkNo)) {
+			peersResponded.add(peerId);
+			++curReplicationDegree;
+		}
+		
+	}
 	
 	private static String generateFileIdentifier(File file) {
 		
@@ -111,8 +147,8 @@ public class Backup {
 	
 	public static void test() throws IOException{
 		String dir = "C:\\Users\\Grosso\\Desktop";
-		String name = "test.txt";
-		backupFile(dir, name, 1);
+		String name = "test2.txt";
+		backupFile(dir, name, 5);
 	}
 
 }

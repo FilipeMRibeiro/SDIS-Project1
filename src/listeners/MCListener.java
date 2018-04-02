@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 
 import peers.Peer;
+import protocols.Backup;
 
 public class MCListener implements Runnable {
 
@@ -15,15 +16,19 @@ public class MCListener implements Runnable {
 			
 			try {
 				StaticVariables.mcSocket.receive(receiveDatagram);
+			
 				
-				String receivedMessage = new String(buf, 0, buf.length).trim();				
-				String[] receivedArgs = receivedMessage.split("\\s+");
+				String receivedMessage = new String(buf, 0, buf.length).trim();			
 				
-				String messageType = receivedArgs[1];
+				System.out.println("MC: " + receivedMessage);
+				
+				String[] receivedArgs = receivedMessage.split(" ");
+				
+				String messageType = receivedArgs[0];
 				
 				switch(messageType){
 					case "STORED":
-						
+						receivedStoredMessage(receivedArgs);
 						break;
 
 					default:
@@ -34,6 +39,15 @@ public class MCListener implements Runnable {
 				System.out.println("Control Channel: " + "ERROR: " + e.getMessage());
 			}
 		}
+	}
+	
+	private static void receivedStoredMessage(String[] receivedArgs) {
+		
+		String peerId = receivedArgs[2];
+		String fileId = receivedArgs[3];
+		String chunkNo = receivedArgs[4];
+
+		Backup.receivedResponse(peerId, fileId, chunkNo);
 	}
 
 }

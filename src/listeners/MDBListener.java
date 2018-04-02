@@ -23,11 +23,17 @@ public class MDBListener implements Runnable {
 				System.out.println("RECEIVED MESSAGE");
 				if(processMessage(message)); //Receives the confirmation that the chunk was stored
 				{
-					Peer.chunkNo = headerParts[4];
-					Peer.senderId = headerParts[2];
+					String chunkNo = headerParts[4];
+					String fileId = headerParts[3];
+					String senderId = headerParts[2];
+					
+					Peer.sendStoredMessage(senderId, fileId, chunkNo);
 				}
 			} catch (IOException e) {
 				System.out.println("Data Backup Channel: " + "ERROR - " + e.getMessage());
+			} catch (InterruptedException e) {
+				System.out.println("Delay error: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
 	}
@@ -47,13 +53,15 @@ public class MDBListener implements Runnable {
 	
 	private static boolean storeChunk(String header, byte[] chunkData) {
 		
+		
+		
 		headerParts = header.split(" ");
 		String fileId = headerParts[3];
 		String chunkNo = headerParts[4];
 
 		
 		try {
-			String path = "Stored Chunks" + "//" + fileId + "//" +"Chunk" + chunkNo;
+			String path = "Stored Chunks" + "//" + "Peer" + Peer.id + "//" + fileId + "//" +"Chunk" + chunkNo;
 			File file = new File(path);
 			file.getParentFile().mkdirs(); 
 			file.createNewFile();	

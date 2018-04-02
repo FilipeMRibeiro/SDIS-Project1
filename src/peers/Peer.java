@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Random;
 
 import interfaces.ClientInterface;
 import listeners.*;
@@ -17,9 +18,7 @@ public class Peer {
 	
 	public static String id;
 	
-	public static String senderId;
-	public static boolean chunkStored;
-	public static String chunkNo;
+
 	
 	
 	
@@ -67,7 +66,18 @@ public class Peer {
 	//RECEIVE REQUESTS FROM CLIENT
 	
 	
-	
+	public static void sendStoredMessage(String senderId, String fileId, String chunkNo) throws InterruptedException, IOException {
+		String message = "STORED" + " " + StaticVariables.version + " " + senderId + " " + fileId + " " + chunkNo + " " + StaticVariables.CRLF2;
+		DatagramPacket messagePacket = new DatagramPacket(message.getBytes(), message.length(), StaticVariables.mcAddress, StaticVariables.mcPort);
+
+		//Random Delay from 0 to 400ms to avoid congestion
+		Random rand = new Random();
+		int delay = rand.nextInt(400) + 1;
+		Thread.sleep(delay);
+		
+		StaticVariables.mcSocket.send(messagePacket);
+		
+	}
 	
 	
 	
