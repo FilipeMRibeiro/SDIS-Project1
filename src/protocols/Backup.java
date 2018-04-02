@@ -15,11 +15,13 @@ import java.nio.file.attribute.FileOwnerAttributeView;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import controllers.PeerController;
+
 public class Backup {
 
 	private static final int chunkSize = 64; //in kBytes
 	private static final int k = 1000; //if we wish to easily convert from kBytes to kiBytes
-	private static String mcast_addr = "225.0.0.0";
+	private static String mcast_addr = "225.0.0";
 	private static int mcast_port = 8000;
 	
 	public Backup(String fileName, String fileDirectory, int repliDegree) {
@@ -52,7 +54,6 @@ public class Backup {
 			
 			//TODO Replace this with a new way to identify the files
 			int fileNo = 0;
-
 			//Cycle that reads the bytes from the file and creates a new file with it
 			try { //Catches errors reading from original file or writing to new file
 				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 ) {
@@ -118,6 +119,11 @@ public class Backup {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		if(args.length != 1) {
+			System.out.println("Usage: java protocols.Backup <mcast_addr>");
+			return;
+		}
+		mcast_addr = args[0];
 		 //splitFile("C:\\Users\\Grosso\\Desktop\\", "testfile.txt");
 		 splitFile("/home/filipe/Documents/", "testfile.txt");
 	}
