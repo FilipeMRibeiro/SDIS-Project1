@@ -5,7 +5,7 @@ import java.net.MulticastSocket;
 
 public class StaticVariables {
 	
-
+	public static final String version = "1.0";
 
 	public static final String CRLF = "\r\n";
 	public static final String CRLF2 = CRLF + CRLF;

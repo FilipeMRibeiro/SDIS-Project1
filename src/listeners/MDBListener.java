@@ -19,6 +19,8 @@ public class MDBListener implements Runnable {
 				StaticVariables.mdbSocket.receive(received);				
 				
 				String message = new String(received.getData(), Charset.forName("ISO_8859_1"));
+				
+				System.out.println("RECEIVED MESSAGE");
 				if(processMessage(message)); //Receives the confirmation that the chunk was stored
 				{
 					Peer.chunkNo = headerParts[4];
