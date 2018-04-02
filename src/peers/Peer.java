@@ -39,6 +39,8 @@ public class Peer {
 		
 		StaticVariables.mcAddress = InetAddress.getByName(args[1].split(":")[0]);
 		StaticVariables.mcPort = Integer.parseInt(args[1].split(":")[1]);
+
+		
 		
 		StaticVariables.mdbAddress = InetAddress.getByName(args[2].split(":")[0]);
 		StaticVariables.mdbPort = Integer.parseInt(args[2].split(":")[1]);
@@ -54,7 +56,7 @@ public class Peer {
 		//FOR NOW
 		//HARDCODED CALL TO A PROTOCOL
 
-		if(args[4] == "1")
+		if(args[4].equals("1"))
 			Backup.test();
 		
 	}
@@ -74,10 +76,13 @@ public class Peer {
 		StaticVariables.mcSocket.joinGroup(StaticVariables.mcAddress);
 		StaticVariables.mcSocket.setTimeToLive(1);
 		
+
+		
+		
 		StaticVariables.mdbSocket = new MulticastSocket(StaticVariables.mdbPort);
 		StaticVariables.mdbSocket.joinGroup(StaticVariables.mdbAddress);
 		StaticVariables.mdbSocket.setTimeToLive(1);
-
+		
 		StaticVariables.mdrSocket = new MulticastSocket(StaticVariables.mdrPort);
 		StaticVariables.mdrSocket.joinGroup(StaticVariables.mdrAddress);
 		StaticVariables.mdrSocket.setTimeToLive(1);

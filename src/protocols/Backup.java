@@ -27,6 +27,7 @@ public class Backup {
 	private static void backupFile(String fileDirectory, String fileName, int replicationDegree) throws IOException {
 		
 		File file = new File(fileDirectory + "\\" + fileName);
+		
 		fileId = generateFileIdentifier(file);
 
 		//Handles the "File not found" Exception
@@ -73,7 +74,7 @@ public class Backup {
 		
 		String message = "PUTCHUNK" + " " + StaticVariables.version + " " + Peer.id + " " + fileId + " " + chunkNo + " " + replicationDegree + " " + StaticVariables.CRLF2 + dataString;
 		
-		DatagramPacket messagePacket = new DatagramPacket(message.getBytes(), message.length());
+		DatagramPacket messagePacket = new DatagramPacket(message.getBytes(), message.length(), StaticVariables.mdbAddress, StaticVariables.mdbPort);
 		StaticVariables.mdbSocket.send(messagePacket);
 	}
 	
@@ -109,7 +110,7 @@ public class Backup {
 	}
 	
 	public static void test() throws IOException{
-		String dir = "C:\\Users\\Utilizador\\Desktop";
+		String dir = "C:\\Users\\Grosso\\Desktop";
 		String name = "test.txt";
 		backupFile(dir, name, 1);
 	}
