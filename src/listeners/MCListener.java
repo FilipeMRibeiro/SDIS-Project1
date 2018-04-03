@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 
 import peers.Peer;
 import protocols.Backup;
+import protocols.Delete;
 import protocols.Restore;
 
 public class MCListener implements Runnable {
@@ -33,6 +34,8 @@ public class MCListener implements Runnable {
 						break;
 					case "GETCHUNK":
 						retrieveChunk(receivedArgs);
+					case "DELETE":
+						deleteFile(receivedArgs);
 					default:
 						break;		
 					}
@@ -63,6 +66,9 @@ public class MCListener implements Runnable {
 		Restore.sendChunk(fileId, chunkNo);
 	}
 	
-
+	private static void deleteFile(String[] receivedArgs) {
+		String fileId = receivedArgs[3];
+		Delete.deleteFile(fileId);
+	}
 
 }

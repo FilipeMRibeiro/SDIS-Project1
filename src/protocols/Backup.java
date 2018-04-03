@@ -149,7 +149,7 @@ public class Backup {
 	
 	public static void test() throws IOException{
 		String dir = "C:\\Users\\Grosso\\Desktop";
-		String name = "test2.txt";
+		String name = "test.jpg";
 		backupFile(dir, name, 2);
 	}
 

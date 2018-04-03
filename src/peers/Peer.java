@@ -12,6 +12,8 @@ import java.util.Random;
 import interfaces.ClientInterface;
 import listeners.*;
 import protocols.Backup;
+import protocols.Delete;
+import protocols.Restore;
 
 
 public class Peer {
@@ -56,7 +58,7 @@ public class Peer {
 		//HARDCODED CALL TO A PROTOCOL
 
 		if(args[4].equals("1"))
-			Backup.test();
+			Delete.test();
 		
 	}
 	

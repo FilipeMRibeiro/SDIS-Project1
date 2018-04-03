@@ -121,8 +121,8 @@ public class Restore {
 		if(!chunksReceivedIndexes.contains(chunkIndex)) {
 			chunksReceivedIndexes.add(chunkIndex);
 			
-			for(int i = 0; i < chunks[chunkIndex].length; ++i)
-				chunks[chunkIndex][i] = chunkData[i];
+			for(int i = 0; i < chunks.length; ++i)
+				chunks[chunkIndex] = chunkData;
 			
 			
 			++chunksReceived;
@@ -131,7 +131,7 @@ public class Restore {
 
 	public static void test() throws IOException{
 		String dir = "C:\\Users\\Grosso\\Desktop";
-		String name = "test2.txt";
+		String name = "test.jpg";
 		initiateProtocol(name, dir);
 	}
 

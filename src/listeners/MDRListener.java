@@ -24,7 +24,7 @@ public class MDRListener implements Runnable {
 			try {
 				StaticVariables.mdrSocket.receive(received);
 				
-				String message = new String(received.getData(), Charset.forName("ISO_8859_1"));
+				String message = new String(received.getData(), 0, received.getLength(), Charset.forName("ISO_8859_1"));
 								
 				processMessage(message); //Receives the confirmation that the chunk was received
 
