@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 
 import peers.Peer;
 import protocols.Backup;
+import protocols.Restore;
 
 public class MCListener implements Runnable {
 
@@ -30,12 +31,13 @@ public class MCListener implements Runnable {
 					case "STORED":
 						receivedStoredMessage(receivedArgs);
 						break;
-
+					case "GETCHUNK":
+						retrieveChunk(receivedArgs);
 					default:
 						break;		
 					}
 				
-			} catch (IOException e) {
+			} catch (IOException | InterruptedException e) {
 				System.out.println("Control Channel: " + "ERROR: " + e.getMessage());
 			}
 		}
@@ -47,7 +49,20 @@ public class MCListener implements Runnable {
 		String fileId = receivedArgs[3];
 		String chunkNo = receivedArgs[4];
 
-		Backup.receivedResponse(peerId, fileId, chunkNo);
+		
+		if(!peerId.equals(Peer.id))	
+			Backup.receivedResponse(peerId, fileId, chunkNo);
 	}
+	
+	private static void retrieveChunk(String[] receivedArgs) throws IOException, InterruptedException {
+		String peerId = receivedArgs[2];
+		String fileId = receivedArgs[3];
+		String chunkNo = receivedArgs[4];
+
+		Restore.requesterId = peerId;
+		Restore.sendChunk(fileId, chunkNo);
+	}
+	
+
 
 }

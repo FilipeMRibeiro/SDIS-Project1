@@ -8,7 +8,6 @@ import peers.Peer;
 
 public class MDBListener implements Runnable {
 
-	private static String[] headerParts;
 	
 	public void run() {
 		while(true){
@@ -22,6 +21,9 @@ public class MDBListener implements Runnable {
 				
 				if(processMessage(message)); //Receives the confirmation that the chunk was stored
 				{
+					
+					String header = message.split(StaticVariables.CRLF2)[0];
+					String[] headerParts = header.split(" ");
 					String chunkNo = headerParts[4];
 					String fileId = headerParts[3];
 					
@@ -61,7 +63,7 @@ public class MDBListener implements Runnable {
 		
 		
 		
-		headerParts = header.split(" ");
+		String[] headerParts = header.split(" ");
 		String fileId = headerParts[3];
 		String chunkNo = headerParts[4];
 

@@ -67,11 +67,9 @@ public class Peer {
 	
 	
 	public static void sendStoredMessage(String fileId, String chunkNo) throws InterruptedException, IOException {
-		String message = "STORED" + " " + StaticVariables.version + " " + id + " " + fileId + " " + chunkNo + " " + StaticVariables.CRLF2;
+		String message = "STORED" + " " + StaticVariables.version + " " + Peer.id + " " + fileId + " " + chunkNo + " " + StaticVariables.CRLF2;
 		DatagramPacket messagePacket = new DatagramPacket(message.getBytes(), message.length(), StaticVariables.mcAddress, StaticVariables.mcPort);
 
-		System.out.println(message);
-		
 		//Random Delay from 0 to 400ms to avoid congestion
 		Random rand = new Random();
 		int delay = rand.nextInt(400) + 1;

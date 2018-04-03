@@ -116,6 +116,7 @@ public class Backup {
 			peersResponded.add(peerId);
 			++curReplicationDegree;
 			System.out.println("RECEIVED CHUNK STORED CONFIRMATION. Current rep: " + curReplicationDegree);
+
 		}
 		
 	}
@@ -149,7 +150,7 @@ public class Backup {
 	public static void test() throws IOException{
 		String dir = "C:\\Users\\Grosso\\Desktop";
 		String name = "test2.txt";
-		backupFile(dir, name, 5);
+		backupFile(dir, name, 2);
 	}
 
 }
