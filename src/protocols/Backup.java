@@ -31,10 +31,12 @@ public class Backup {
 	private static String chunkNo;
 	
 	
-	private static void backupFile(String fileDirectory, String fileName, int replicationDegree) throws IOException {
+	public static void backupFile(String fileDirectory, String fileName, int replicationDegree) throws IOException {
 		
-		File file = new File(fileDirectory + "\\" + fileName);
+		File file = new File(fileDirectory + "/" + fileName);
 		fileId = generateFileIdentifier(file);
+		
+		System.out.println("test");
 
 		//Handles the "File not found" Exception
 		try {
@@ -47,7 +49,8 @@ public class Backup {
 			
 			//Helper variable to check how many bytes we have read from the original file
 			int bytesRead = 0; 
-			
+
+			System.out.println("test2");
 			//TODO Replace this with a new way to identify the files
 			int chunkNo = 1;
 			//Cycle that reads the bytes from the file and creates a new file with it
@@ -60,7 +63,8 @@ public class Backup {
 					
 					proceed = false;
 					Backup.chunkNo = Integer.toString(chunkNo);
-		
+
+					System.out.println("test3");
 					//waits for responses for 1 second
 					long startTime = System.currentTimeMillis();
 					while(!proceed) {

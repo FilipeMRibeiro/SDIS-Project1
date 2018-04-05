@@ -24,7 +24,7 @@ public class Delete {
 	}
 	
 	public static void deleteFile(String fileId) {
-		String path = "Stored Chunks" + "\\" + "Peer" + Peer.id + "\\" + fileId;
+		String path = "Stored Chunks" + "/" + "Peer" + Peer.id + "/" + fileId;
 		File file = new File(path);
 		
 		if(!file.exists())

@@ -69,7 +69,8 @@ public class MDBListener implements Runnable {
 
 		
 		try {
-			String path = "Stored Chunks" + "//" + "Peer" + Peer.id + "//" + fileId + "//" +"Chunk" + chunkNo;
+			String working_dir = System.getProperty("user.dir");
+			String path = working_dir + File.separator + "Stored Chunks" + File.separator + "Peer" + Peer.id + File.separator + fileId + File.separator +"Chunk" + chunkNo;
 			File file = new File(path);
 			file.getParentFile().mkdirs(); 
 			file.createNewFile();	

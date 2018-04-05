@@ -67,8 +67,8 @@ public class Restore {
 	}
 
 	private static void restoreFile() throws IOException{
-
-		String path = "Restored Chunks" + File.separator + fileName;
+		String working_dir = System.getProperty("user.dir");
+		String path = working_dir + File.separator + "Restored Chunks" + File.separator + fileName;
 
 		File restoredFile = new File(path);
 		restoredFile.getParentFile().mkdirs(); 
@@ -85,8 +85,8 @@ public class Restore {
 
 
 	public static void sendChunk(String fileId, String chunkNo) throws IOException, InterruptedException {
-
-		String path = "Stored Chunks" + "//" + "Peer" + Peer.id + "//" + fileId + "//" +"Chunk" + chunkNo;
+		String working_dir = System.getProperty("user.dir");
+		String path = working_dir + File.separator + "Stored Chunks" + File.separator + "Peer" + Peer.id + File.separator + fileId + File.separator +"Chunk" + chunkNo;
 
 		File chunk = new File(path);
 		if(!chunk.exists())
