@@ -35,8 +35,7 @@ public class Backup {
 		
 		File file = new File(fileDirectory + "/" + fileName);
 		fileId = generateFileIdentifier(file);
-		
-		System.out.println("test");
+		long size_left = file.length();
 
 		//Handles the "File not found" Exception
 		try {
@@ -45,12 +44,18 @@ public class Backup {
 			BufferedInputStream inputBuffer = new BufferedInputStream(fileInput);
 			
 			//Buffer to store the data for each chunk
-			byte[] fileDataBuffer = new byte[StaticVariables.chunkSize * StaticVariables.k];
+			byte[] fileDataBuffer;
+			if(size_left < StaticVariables.chunkSize * StaticVariables.k) {
+				int chunk_size = (int) size_left;
+				fileDataBuffer = new byte[chunk_size];
+			}
+			else {
+				fileDataBuffer = new byte[StaticVariables.chunkSize * StaticVariables.k];
+			}
 			
 			//Helper variable to check how many bytes we have read from the original file
 			int bytesRead = 0; 
-
-			System.out.println("test2");
+			
 			//TODO Replace this with a new way to identify the files
 			int chunkNo = 1;
 			//Cycle that reads the bytes from the file and creates a new file with it
@@ -60,11 +65,11 @@ public class Backup {
 				while((bytesRead = inputBuffer.read(fileDataBuffer)) > 0 && attempt <= 5) {
 					
 					sendMessage(fileDataBuffer, bytesRead, chunkNo, replicationDegree);
+					System.out.println(bytesRead);
 					
 					proceed = false;
 					Backup.chunkNo = Integer.toString(chunkNo);
 
-					System.out.println("test3");
 					//waits for responses for 1 second
 					long startTime = System.currentTimeMillis();
 					while(!proceed) {
@@ -82,6 +87,16 @@ public class Backup {
 					else {
 						attempt = 1; //Resets attempt
 						++chunkNo; //Advances chunk
+						if(size_left > StaticVariables.chunkSize * StaticVariables.k) {
+							size_left -= StaticVariables.chunkSize * StaticVariables.k;
+						}
+						if(size_left < StaticVariables.chunkSize * StaticVariables.k) {
+							int chunk_size = (int) size_left;
+							fileDataBuffer = new byte[chunk_size];
+						}
+						else {
+							fileDataBuffer = new byte[StaticVariables.chunkSize * StaticVariables.k];
+						}
 						curReplicationDegree = 0; 
 						peersResponded.clear();
 					}

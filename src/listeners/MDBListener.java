@@ -3,6 +3,7 @@ package listeners;
 import java.io.*;
 import java.net.DatagramPacket;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 import peers.Peer;
 
@@ -50,18 +51,28 @@ public class MDBListener implements Runnable {
 			return false;
 		
 		String body = message.split(StaticVariables.CRLF2)[1];
-
-
-		byte[] chunkData = body.getBytes(Charset.forName("ISO_8859_1")); //Solves some compatibility issues
+		byte[] chunkData = new byte[64000];
+		chunkData = body.getBytes();		
+		chunkData = body.getBytes(Charset.forName("ISO_8859_1")); //Solves some compatibility issues
+		byte[] chunkData_trimmed = trim(chunkData);
 		
-		return storeChunk(header, chunkData);
-		
+		return storeChunk(header, chunkData_trimmed);
 		
 	}
 	
+	private static byte[] trim(byte[] bytes)
+	{
+	    int i = bytes.length - 1;
+	    while (i >= 0 && bytes[i] == 0)
+	    {
+	        --i;
+	    }
+
+	    return Arrays.copyOf(bytes, i + 1);
+	}
+
+	
 	private static boolean storeChunk(String header, byte[] chunkData) {
-		
-		
 		
 		String[] headerParts = header.split(" ");
 		String fileId = headerParts[3];
@@ -73,14 +84,14 @@ public class MDBListener implements Runnable {
 			String path = working_dir + File.separator + "Stored Chunks" + File.separator + "Peer" + Peer.id + File.separator + fileId + File.separator +"Chunk" + chunkNo;
 			File file = new File(path);
 			file.getParentFile().mkdirs(); 
-			file.createNewFile();	
+			file.createNewFile();
 			
 			FileOutputStream fileOutput = new FileOutputStream(file);
 			fileOutput.write(chunkData);
 			fileOutput.close();
 		} catch (IOException e) {
 			return false;
-		}		
+		}
 		return true;
 	}
 	

@@ -34,8 +34,10 @@ public class MCListener implements Runnable {
 						break;
 					case "GETCHUNK":
 						retrieveChunk(receivedArgs);
+						break;
 					case "DELETE":
 						deleteFile(receivedArgs);
+						break;
 					default:
 						break;		
 					}
